@@ -95,6 +95,7 @@ Reproducibility: Use --seed for consistent results.
 
 License
 MIT License (see LICENSE file, add via GitHub interface if not present).
+GPL v3 License with Apache 2.0 note for libdds.so
 Citation
 If you use this dataset, please cite:
 
