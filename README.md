@@ -81,10 +81,10 @@ print("First 5 values:", values[:5])
 File Structure
 
 ddstable.py: Python interface to libdds.so.
-libdds.so: Precompiled DDS library (Linux x86_64).
+libdds.so: Precompiled DDS library (Linux x86_64, Apache 2.0 License).
 make_dds_results.py: Generates PBN deals and DDS results.
 to_bytes.py: Converts results.tsv to results.npy.
-requirements.txt: Python dependencies.
+requirements.txt: Python dependencies (numpy, tqdm).
 .gitignore: Ignores temporary files (e.g., results.tsv, results.npy, tmp.tsv).
 
 Dataset Details
@@ -94,7 +94,7 @@ Size: ~11,293 bytes for 100 deals.
 Reproducibility: Use --seed for consistent results.
 
 License
-MIT License (see LICENSE file, add via GitHub interface if not present).
+This repository is licensed under the GNU General Public License v3.0 (see LICENSE file). The included libdds.so is licensed under the Apache 2.0 License (see github.com/dds-bridge/dds for details). For alternative licensing needs, contact the repository owner via GitHub issues.
 Citation
 If you use this dataset, please cite:
 
@@ -104,4 +104,4 @@ The DDS library: github.com/dds-bridge/dds
 Contributing
 Contributions are welcome! Open an issue or pull request on GitHub.
 Contact
-For questions, open an issue on GitHub.# make-dds-dataset
+For questions or alternative licensing requests, open an issue on GitHub.
