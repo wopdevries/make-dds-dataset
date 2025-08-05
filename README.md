@@ -94,12 +94,12 @@ Size: ~11,293 bytes for 100 deals.
 Reproducibility: Use --seed for consistent results.
 
 License
-<<<<<<< HEAD
+
 This repository is licensed under the GNU General Public License v3.0 (see LICENSE file). The included libdds.so is licensed under the Apache 2.0 License (see github.com/dds-bridge/dds for details). For alternative licensing needs, contact the repository owner via GitHub issues.
-=======
+
 MIT License (see LICENSE file, add via GitHub interface if not present).
 GPL v3 License with Apache 2.0 note for libdds.so
->>>>>>> cf1978bc4ff8c64edee65783357915e11cbafcf0
+
 Citation
 If you use this dataset, please cite:
 
@@ -206,12 +206,12 @@ Size: ~11,293 bytes for 100 deals.
 Reproducibility: Use --seed for consistent results.
 
 License
-<<<<<<< HEAD
+
 This repository is licensed under the GNU General Public License v3.0 (see LICENSE file). The included libdds.so is licensed under the Apache 2.0 License (see github.com/dds-bridge/dds for details). For alternative licensing needs, contact the repository owner via GitHub issues.
-=======
+
 MIT License (see LICENSE file, add via GitHub interface if not present).
 GPL v3 License with Apache 2.0 note for libdds.so
->>>>>>> cf1978bc4ff8c64edee65783357915e11cbafcf0
+
 Citation
 If you use this dataset, please cite:
 

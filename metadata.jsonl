@@ -1,0 +1,1 @@
+{"@context": "http://schema.org", "@type": "Dataset", "name": "Bridge DDS Dataset", "description": "Bridge deals in PBN format with DDS results", "license": "https://www.gnu.org/licenses/gpl-3.0.html, https://www.apache.org/licenses/LICENSE-2.0"}
