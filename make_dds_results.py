@@ -44,14 +44,14 @@ def random_to_pbn():
                     pbn += " "
             else:
                 pbn += "."
-    print(f"Debug: Generated PBN: {pbn}")  # Debug output
+    print(f"Debug: Generated PBN: {pbn}", file=sys.stderr)
     return pbn
 
 def to_dds(pbn):
     players = ["N", "E", "S", "W"]
     denominations = ["C", "D", "H", "S", "NT"]
-    print(f"Debug: Calling get_ddstable with PBN: {pbn}")  # Debug output
-    dds_results = get_ddstable(pbn.encode('utf-8'))
+    print(f"Debug: Calling get_ddstable with PBN: {pbn}", file=sys.stderr)
+    dds_results = get_ddstable(pbn)  # Pass string, not bytes
     dds = []
     for player in players:
         for denomination in denominations:
@@ -60,14 +60,18 @@ def to_dds(pbn):
     return ",".join([str(x) for x in dds])
 
 def test():
-    lines = """N:JT987.752.A3.J65 AQ542..J52.AT732 .T9863.T8764.K94 K63.AKQJ4.KQ9.Q8	3,4,3,3,2,10,9,10,10,11,2,4,3,3,2,9,9,10,10,11
+    lines = """N:JT987.752.A3.J65 AQ542.KQ.J52.AT732 K.T9863.T8764.K94 K63.AJ4.KQ9.Q8	3,4,3,3,2,10,9,10,10,11,2,4,3,3,2,9,9,10,10,11
 N:8.J63.A982.QT982 97.Q9752.KJ5.K76 AQJ63.AK84.74.J5 KT542.T.QT63.A43	8,7,7,7,6,5,6,5,6,7,7,7,7,6,6,5,6,5,6,7
 N:T43.K98.K843.876 Q72.Q4.T7652.A94 AJ98.T632.AJ9.52 K65.AJ75.Q.KQJT3	4,6,5,6,5,9,7,7,7,7,3,6,5,6,5,9,6,7,6,7"""
     for line in lines.split("\n"):
         if line.strip():  # Skip empty lines
             pbn, dds = line.split("\t")
-            print(f"Debug: Testing PBN: {pbn}")  # Debug output
-            assert to_dds(pbn) == dds, f"{to_dds(pbn)} != {dds}"
+            print(f"Debug: Testing PBN: {pbn}", file=sys.stderr)
+            try:
+                assert to_dds(pbn) == dds, f"{to_dds(pbn)} != {dds}"
+            except Exception as e:
+                print(f"Test failed for PBN {pbn}: {e}", file=sys.stderr)
+                raise
 
 def main(num, min_hcp=None):
     print("pbn\tdds_results")  # Add header for TSV
@@ -76,14 +80,18 @@ def main(num, min_hcp=None):
             pbn = random_to_pbn()
             north_hand = pbn.split()[0].split(':')[1]  # Extract North hand PBN
             hcp = calculate_hcp(north_hand)
-            print(f"Debug: North HCP: {hcp}")  # Debug output
+            print(f"Debug: North HCP: {hcp}", file=sys.stderr)
             if min_hcp is None or hcp >= min_hcp:
                 break
         dds = to_dds(pbn)
         print(f"{pbn}\t{dds}", flush=True)
 
 if __name__ == '__main__':
-    test()
+    try:
+        test()
+    except Exception as e:
+        print(f"Test suite failed: {e}", file=sys.stderr)
+        sys.exit(1)
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, default=None)
@@ -98,4 +106,8 @@ if __name__ == '__main__':
         seed = args.seed
 
     np.random.seed(seed=seed)
-    main(args.num, args.min_hcp)
+    try:
+        main(args.num, args.min_hcp)
+    except Exception as e:
+        print(f"Main execution failed: {e}", file=sys.stderr)
+        sys.exit(1)

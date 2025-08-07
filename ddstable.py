@@ -1,8 +1,13 @@
 import ctypes
 import os
+import sys
 
 # Load the DDS shared library
-lib = ctypes.cdll.LoadLibrary(os.path.join(os.path.dirname(__file__), "libdds.so"))
+try:
+    lib = ctypes.cdll.LoadLibrary(os.path.join(os.path.dirname(__file__), "libdds.so"))
+except OSError as e:
+    print(f"Error loading libdds.so: {e}", file=sys.stderr)
+    raise
 
 # Define the structure for DDS results
 class DDTable(ctypes.Structure):
@@ -16,15 +21,16 @@ def get_ddstable(pbn):
     """
     Compute double-dummy solver results for a PBN deal.
     Args:
-        pbn: String in PBN format (e.g., "N:A2.KT.T763.AKQ87 KQ873.J54.Q85.T9 T5.Q632.KJ94.654 J964.A987.A2.J32")
+        pbn: String or bytes in PBN format (e.g., "N:A2.KT.T763.AKQ87 KQ873.J54.Q85.T9 T5.Q632.KJ94.654 J964.A987.A2.J32")
     Returns:
         Dictionary with keys as players (N, E, S, W) and denominations (C, D, H, S, NT),
         values as the number of tricks.
     """
     try:
         table = DDTable()
-        pbn_bytes = pbn.encode('utf-8')
-        print(f"Debug: Calling CalcDDtable with PBN: {pbn}")  # Debug output
+        # Ensure pbn is bytes; accept string or bytes input
+        pbn_bytes = pbn if isinstance(pbn, bytes) else pbn.encode('utf-8')
+        print(f"Debug: Calling CalcDDtable with PBN: {pbn_bytes.decode('utf-8')}", file=sys.stderr)
         result = lib.CalcDDtable(pbn_bytes, ctypes.byref(table))
         if result != 1:
             raise RuntimeError(f"DDS calculation failed with error code {result}")
@@ -36,8 +42,8 @@ def get_ddstable(pbn):
             dds_results[player] = {}
             for j, denom in enumerate(denominations):
                 dds_results[player][denom] = table.resTable[j][i]
-        print(f"Debug: DDS results: {dds_results}")  # Debug output
+        print(f"Debug: DDS results: {dds_results}", file=sys.stderr)
         return dds_results
     except Exception as e:
-        print(f"Error in get_ddstable: {e}")
+        print(f"Error in get_ddstable: {e}", file=sys.stderr)
         raise

@@ -1,2 +1,1 @@
-# Bridge DDS Dataset
-...
+[Dataset card content]
