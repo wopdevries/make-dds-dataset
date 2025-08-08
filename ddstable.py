@@ -5,7 +5,11 @@ import sys
 def validate_pbn(pbn):
     """Validate a PBN string: 52 unique cards, 13 per hand, correct suits."""
     try:
-        hands = pbn.split()[1:] if pbn.startswith("N:") else pbn.split()
+        # Handle PBN starting with 'N:'
+        if pbn.startswith("N:"):
+            hands = pbn[2:].split()
+        else:
+            hands = pbn.split()
         if len(hands) != 4:
             raise ValueError(f"PBN must have 4 hands, found {len(hands)}")
         
