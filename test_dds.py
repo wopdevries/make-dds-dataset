@@ -30,7 +30,7 @@ lib.CalcDDtablePBN.argtypes = [dealPBN, ctypes.POINTER(DDTable)]
 lib.CalcDDtablePBN.restype = ctypes.c_int
 
 # Test with a valid PBN (13 cards per hand)
-pbn = "N:AKQJ.T98.AK.5432 T98.AK.QJT.9876 432.QJT.9876.AKQ 765.65432.5432.JT"
+pbn = "N:AKQJ.T98.AK.5432 T98.AK.QJT.98765 432.QJT.9876.AKQ 765.65432.5432.JT"
 pbn_bytes = pbn.encode('utf-8')
 deal = dealPBN()
 deal.trump = 0
