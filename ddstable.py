@@ -54,7 +54,7 @@ except OSError as e:
     print(f"Error loading libdds.so: {e}", file=sys.stderr)
     raise
 
-lib.SetMaxThreads(0)
+lib.SetMaxThreads(1)  # Use 1 thread explicitly
 
 class dealPBN(ctypes.Structure):
     _fields_ = [

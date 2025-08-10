@@ -9,7 +9,7 @@ except OSError as e:
     raise
 
 # Initialize DDS thread pool
-lib.SetMaxThreads(0)
+lib.SetMaxThreads(1)  # Use 1 thread explicitly
 
 # Define dealPBN structure
 class dealPBN(ctypes.Structure):
