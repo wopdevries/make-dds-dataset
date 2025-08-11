@@ -3,6 +3,7 @@ import ctypes
 import argparse
 import random
 import json
+import sys
 
 def generate_pbn(seed, min_hcp):
     random.seed(seed)
@@ -14,7 +15,7 @@ def calc_dds(pbn):
     deal = dds.ddTableDealPBN()
     deal.cards = pbn.encode('utf-8')
     table = dds.ddTableResults()
-    res = dds.CalcDDtablePBN(deal, ctypes.byref(table))
+    res = dds.libdds.CalcDDtablePBN(deal, ctypes.byref(table))
     if res != dds.RETURN_NO_FAULT:
         print(f"Debug: DDS calculation failed with error code {res}", file=sys.stderr)
         return None
@@ -25,7 +26,6 @@ def calc_dds(pbn):
         results[strain] = {}
         for j, direction in enumerate(directions):
             results[strain][direction] = table.resTable[i][j]
-    dds.FreeDDTable(ctypes.byref(table))
     return results
 
 def main():

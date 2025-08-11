@@ -14,8 +14,6 @@ class ddTableResults(ctypes.Structure):
 # Function prototypes
 libdds.CalcDDtablePBN.argtypes = [ddTableDealPBN, ctypes.POINTER(ddTableResults)]
 libdds.CalcDDtablePBN.restype = ctypes.c_int
-libdds.FreeDDTable.argtypes = [ctypes.POINTER(ddTableResults)]
-libdds.FreeDDTable.restype = None
 
 # Constants
 RETURN_NO_FAULT = 1

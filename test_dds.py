@@ -15,7 +15,7 @@ table = dds.ddTableResults()
 
 # Call CalcDDtablePBN
 print(f"Calling CalcDDtablePBN with PBN: {pbn}")
-res = dds.CalcDDtablePBN(deal, ctypes.byref(table))
+res = dds.libdds.CalcDDtablePBN(deal, ctypes.byref(table))
 if res != dds.RETURN_NO_FAULT:
     print(f"DDS calculation failed with error code {res}", file=sys.stderr)
     sys.exit(1)
@@ -29,6 +29,3 @@ for i in range(5):  # 5 strains (NT, S, H, D, C)
     results.append(row)
 
 print(f"Result: {results}")
-
-# Free allocated memory
-dds.FreeDDTable(ctypes.byref(table))
