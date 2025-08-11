@@ -3,8 +3,8 @@ import ctypes
 import json
 import sys
 
-# Example PBN string (13 cards per hand, 52 total, no duplicates)
-pbn = "N:AKQJ.J98.AK.5432 T98.AKQT.Q9.AKQ6 432.752.J8762.JT 765.643.5439.987"
+# Example PBN string
+pbn = "N:AKQJ.T98.AK.5432 T98.AK.QJT9.98765 432.QJT.9876.AKQ 765.65432.5432.JT"
 
 # Convert PBN string to deal
 deal = dds.ddTableDealPBN()

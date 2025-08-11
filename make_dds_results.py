@@ -7,7 +7,7 @@ import sys
 
 def generate_pbn(seed, min_hcp):
     random.seed(seed)
-    pbn = "N:AKQJ.J98.AK.5432 T98.AKQT.Q9.AKQ6 432.752.J8762.JT 765.643.5439.987"
+    pbn = "N:AKQJ.T98.AK.5432 T98.AK.QJT9.98765 432.QJT.9876.AKQ 765.65432.5432.JT"
     print(f"Debug: Testing PBN: {pbn}", file=sys.stderr)
     return pbn
 
