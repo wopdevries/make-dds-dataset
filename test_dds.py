@@ -1,6 +1,7 @@
 import dds
 import ctypes
 import json
+import sys
 
 # Example PBN string
 pbn = "N:AKQJ.T98.AK.5432 T98.AK.QJT9.98765 432.QJT.9876.AKQ 765.65432.5432.JT"
@@ -12,18 +13,14 @@ deal.cards = pbn.encode('utf-8')
 # Initialize table results
 table = dds.ddTableResults()
 
-# Set up modes and threads
-mode = 0
-threadIndex = 0
-
 # Call CalcDDtablePBN
 print(f"Calling CalcDDtablePBN with PBN: {pbn}")
 res = dds.CalcDDtablePBN(deal, ctypes.byref(table))
 if res != dds.RETURN_NO_FAULT:
-    print(f"DDS calculation failed with error code {res}")
-    exit(1)
+    print(f"DDS calculation failed with error code {res}", file=sys.stderr)
+    sys.exit(1)
 
-# Convert results to a list for easier reading
+# Convert results to a list
 results = []
 for i in range(5):  # 5 strains (NT, S, H, D, C)
     row = []
