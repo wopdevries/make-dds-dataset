@@ -19,3 +19,4 @@ libdds.CalcDDtablePBN.restype = ctypes.c_int
 RETURN_NO_FAULT = 1
 RETURN_FAULT = -1
 RETURN_PBN_FAULT = -99
+RETURN_MEMORY = -10
