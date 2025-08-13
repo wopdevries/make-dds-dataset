@@ -7,31 +7,46 @@
 #ifndef DDS_THREADMEM_H
 #define DDS_THREADMEM_H
 
-#include "Moves.h"
+#include "dds.h"
 #include "TransTable.h"
+#include "Moves.h"
 #include "Scheduler.h"
-
-#define MAXNOOFTHREADS 32
-
-struct pos;
 
 struct localVarType
 {
   int trump;
   int iniDepth;
-  int nodeTypeStore[DDS_HANDS];
-  int lowestWin[50][DDS_SUITS];
-  struct moveType bestMove[50];
-  struct moveType bestMoveTT[50];
-  struct moveType forbiddenMoves[50];
-  struct movePlyType rel[50];
-  struct winCardType winners[50];
-  struct movePlyType moves;
-  struct transTableType transTable;
+  int nodes;
   int trickNodes;
+  moveType bestMove[50];
+  moveType bestMoveTT[50];
+  moveType forbiddenMoves[50];
+  unsigned short int lowestWin[50][DDS_SUITS];
+  int nodeTypeStore[DDS_HANDS];
+  relRanksType rel;
+  pos lookAheadPos;
+  Moves moves;
+  struct WinnersType
+  {
+    int number;
+    struct WinType
+    {
+      int suit;
+      int winnerRank;
+      int winnerHand;
+      int secondRank;
+      int secondHand;
+    };
+    WinType winner[50];
+  };
+  WinnersType winners[14];
+  TransTable *transTable; // Pointer to TransTable object
+  FILE *fpTopLevel;
+  class ABstats *ABStats;
 };
 
 extern struct localVarType localVar[MAXNOOFTHREADS];
 extern Scheduler scheduler;
 
 #endif
+

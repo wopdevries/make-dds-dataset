@@ -10,86 +10,35 @@
 #include "dds.h"
 #include "Moves.h"
 
-struct pos;
-struct localVarType;
+bool ABsearch0(pos *posPoint, int target, int depth, localVarType *thrp);
+bool ABsearch1(pos *posPoint, int target, int depth, localVarType *thrp);
+bool ABsearch2(pos *posPoint, int target, int depth, localVarType *thrp);
+bool ABsearch3(pos *posPoint, int target, int depth, localVarType *thrp);
 
-struct evalType
-{
-  int tricks;
-};
+void Make0(pos *posPoint, int depth, moveType *mply);
+void Make1(pos *posPoint, int depth, moveType *mply);
+void Make2(pos *posPoint, int depth, moveType *mply);
+void Make3(pos *posPoint, unsigned short int trickCards[DDS_SUITS], int depth, moveType *mply, localVarType *thrp);
 
-bool ABsearch(
-  struct pos * posPoint,
-  int target,
-  int depth,
-  struct localVarType * thrp);
+void Undo0(pos *posPoint, int depth, moveType *mply, localVarType *thrp);
+void Undo0Simple(pos *posPoint, int depth, moveType *mply);
+void Undo1(pos *posPoint, int depth, moveType *mply);
+void Undo2(pos *posPoint, int depth, moveType *mply);
+void Undo3(pos *posPoint, int depth, moveType *mply);
 
-bool ABsearch0(
-  struct pos * posPoint,
-  int target,
-  int depth,
-  struct localVarType * thrp);
+void Make3Simple(pos *posPoint, unsigned short int trickCards[DDS_SUITS], int depth, moveType *mply, localVarType *thrp);
 
-bool ABsearch1(
-  struct pos * posPoint,
-  int target,
-  int depth,
-  struct localVarType * thrp);
+evalType Evaluate(pos *posPoint, int trump, localVarType *thrp);
 
-bool ABsearch2(
-  struct pos * posPoint,
-  int target,
-  int depth,
-  struct localVarType * thrp);
-
-bool ABsearch3(
-  struct pos * posPoint,
-  int target,
-  int depth,
-  struct localVarType * thrp);
-
-void Make0(
-  struct pos * posPoint,
-  int depth,
-  struct moveType * mply);
-
-void Make1(
-  struct pos * posPoint,
-  int depth,
-  struct moveType * mply);
-
-void Make2(
-  struct pos * posPoint,
-  int depth,
-  struct moveType * mply);
-
-void Make3(
-  struct pos * posPoint,
-  unsigned short int trickCards[DDS_SUITS],
-  int depth,
-  struct moveType * mply,
-  struct localVarType * thrp);
-
-void Make3Simple(
-  struct pos * posPoint,
-  unsigned short int trickCards[DDS_SUITS],
-  int depth,
-  struct moveType * mply,
-  struct localVarType * thrp);
-
-void Undo0(
-  struct pos * posPoint,
-  int depth,
-  struct moveType * mply,
-  struct localVarType * thrp);
-
-struct evalType Evaluate(
-  struct pos * posPoint,
-  int trump,
-  struct localVarType * thrp);
-
-void RankToText(
-  unsigned short int rankInSuit[DDS_HANDS][DDS_SUITS],
-  char text[DDS_HANDS][80]);
+void DumpRetrieved(FILE *fp, pos *posPoint, nodeCardsType *cardsP, int target, int depth);
+void DumpStored(FILE *fp, pos *posPoint, moveType *mply, nodeCardsType *cardsP, int target, int depth);
+void DumpTopLevel(localVarType *thrp, int tricks, int lower, int upper, int printMode);
+void RankToText(unsigned short int rankInSuit[DDS_HANDS][DDS_SUITS], char text[DDS_HAND_LINES][DDS_FULL_LINE]);
+void RankToDiagrams(unsigned short int rankInSuit[DDS_HANDS][DDS_SUITS], nodeCardsType *np, char text[DDS_HAND_LINES][DDS_FULL_LINE]);
+void WinnersToText(unsigned short int ourWinRanks[DDS_SUITS], char text[DDS_SUITS][DDS_FULL_LINE]);
+void NodeToText(nodeCardsType *np, char text[DDS_NODE_LINES - 1][DDS_FULL_LINE]);
+void FullNodeToText(nodeCardsType *np, char text[DDS_NODE_LINES][DDS_FULL_LINE]);
+void PosToText(pos *posPoint, int target, int depth, char text[DDS_POS_LINES][DDS_FULL_LINE]);
 
 #endif
+

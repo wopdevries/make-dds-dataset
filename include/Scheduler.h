@@ -7,29 +7,29 @@
 #ifndef DDS_SCHEDULER_H
 #define DDS_SCHEDULER_H
 
-#include "portab.h"
-
-#define MAXNOOFTHREADS 32
+#include <time.h>
+#include "dds.h"
 
 class Scheduler
 {
 private:
+  int noOfThreads;
   int threadGroup[MAXNOOFTHREADS];
   int threadCurrGroup[MAXNOOFTHREADS];
   int threadToHand[MAXNOOFTHREADS];
-  int noOfThreads;
-  timeval startTime[MAXNOOFTHREADS];
-  timeval endTime[MAXNOOFTHREADS];
+  int groupSize[2 * DDS_HANDS];
+  int groupNext[2 * DDS_HANDS];
+  int groupToThread[2 * DDS_HANDS];
+  struct timeval startTime[MAXNOOFTHREADS];
+  struct timeval endTime[MAXNOOFTHREADS];
 
 public:
   Scheduler();
   ~Scheduler();
   void Reset();
-  void RegisterRun(int group, int hand, int thrId);
-  bool ThreadOK(int thrId);
-  void Print();
+  void RegisterRun(int hand, int group, int threadNo);
+  int MakeRun(int group, int threadNo);
 };
 
-extern Scheduler scheduler;
-
 #endif
+

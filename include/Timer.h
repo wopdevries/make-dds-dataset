@@ -8,40 +8,36 @@
 #define DDS_TIMER_H
 
 #include <time.h>
-#include "portab.h"
+#include "dds.h"
 
-#define DDS_FNAME_LEN 200
-#define DDS_TIMERS 50
+#define TIMER_MOVEGEN 0
+#define TIMER_MAKE 8
+#define TIMER_UNDO 16
+#define TIMER_NEXTMOVE 24
+#define TIMER_QT 32
+#define TIMER_AB 40
+#define TIMER_BUILD 48
+#define NOOF_TIMERS 56
 
 class Timer
 {
 private:
-  clock_t startTime[DDS_TIMERS];
-  clock_t accumTime[DDS_TIMERS];
-  bool running[DDS_TIMERS];
+  struct timeval startTime[NOOF_TIMERS];
+  struct timeval endTime[NOOF_TIMERS];
+  int count[NOOF_TIMERS];
+  double sum[NOOF_TIMERS];
   char fname[DDS_FNAME_LEN];
 
 public:
   Timer();
   ~Timer();
   void Reset();
-  void Start(int n);
-  void End(int n);
-  double Used(int n);
-  void SetFile(char * fname);
-  void Print();
+  void Start(int no);
+  void End(int no);
+  void Print() const;
 };
 
-#define TIMER_START(n) timer.Start(n)
-#define TIMER_END(n) timer.End(n)
-#define TIMER_MOVEGEN 0
-#define TIMER_MAKE 1
-#define TIMER_UNDO 2
-#define TIMER_NEXTMOVE 3
-#define TIMER_LOOKUP 4
-#define TIMER_EVALUATE 5
-#define TIMER_QT 6
-#define TIMER_LT 7
-#define TIMER_BUILD 8
+#define TIMER_START(x) timer.Start(x)
+#define TIMER_END(x) timer.End(x)
 
 #endif
