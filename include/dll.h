@@ -1,9 +1,12 @@
 /*
    DDS, a bridge double dummy solver.
+
    Copyright (C) 2006-2014 by Bo Haglund /
-   2014-2018 by Bo Haglund & Soren Hein.
+   2014-2015 by Bo Haglund & Soren Hein.
+
    See LICENSE and README.
 */
+
 
 #ifndef DDS_DLL_H
 #define DDS_DLL_H
@@ -23,15 +26,19 @@
   #define EXTERN_C
 #endif
 
-/* Version 2.9.0. Allowing for 2 digit minor versions */
-#define DDS_VERSION 20900
+/* Version 2.8.2. Allowing for 2 digit minor versions */
+#define DDS_VERSION 20803
+
 
 #define DDS_HANDS 4
 #define DDS_SUITS 4
 #define DDS_STRAINS 5
 
+
 #define MAXNOOFBOARDS 200
-#define MAXNOOFTABLES 40
+
+#define MAXNOOFTABLES 32
+
 
 // Error codes. See interface document for more detail.
 // Call ErrorMessage(code, line[]) to get the text form in line[].
@@ -134,10 +141,6 @@
 #define RETURN_THREAD_WAIT -103
 #define TEXT_THREAD_WAIT "Something failed waiting for thread to end"
 
-// Tried to set a multi-threading system that is not present in DLL.
-#define RETURN_THREAD_MISSING -104
-#define TEXT_THREAD_MISSING "Multi-threading system not present"
-
 // CalcAllTables*()
 #define RETURN_NO_SUIT -201
 #define TEXT_NO_SUIT "Denomination filter vector has no entries"
@@ -149,6 +152,8 @@
 // SolveAllChunks*()
 #define RETURN_CHUNK_SIZE -301
 #define TEXT_CHUNK_SIZE "Chunk size is less than 1"
+
+
 
 struct futureTricks
 {
@@ -169,6 +174,7 @@ struct deal
   unsigned int remainCards[DDS_HANDS][DDS_SUITS];
 };
 
+
 struct dealPBN
 {
   int trump;
@@ -177,6 +183,7 @@ struct dealPBN
   int currentTrickRank[3];
   char remainCards[80];
 };
+
 
 struct boards
 {
@@ -237,9 +244,13 @@ struct ddTablesRes
 
 struct parResults
 {
+  /* index = 0 is NS view and index = 1
+     is EW view. By 'view' is here meant
+     which side that starts the bidding. */
   char parScore[2][16];
   char parContractsString[2][128];
 };
+
 
 struct allParResults
 {
@@ -248,6 +259,13 @@ struct allParResults
 
 struct parResultsDealer
 {
+  /* number: Number of contracts yielding the par score.
+     score: Par score for the specified dealer hand.
+     contracts:  Par contract text strings.  The first contract
+       is in contracts[0], the last one in contracts[number-1].
+       The detailed text format is is given in the DLL interface
+       document.
+  */
   int number;
   int score;
   char contracts[10][10];
@@ -255,25 +273,30 @@ struct parResultsDealer
 
 struct contractType
 {
-  int underTricks;
-  int overTricks;
-  int level;
-  int denom;
-  int seats;
+  int underTricks; /* 0 = make 1-13 = sacrifice */
+  int overTricks; /* 0-3, e.g. 1 for 4S + 1. */
+  int level; /* 1-7 */
+  int denom; /* 0 = No Trumps, 1 = trump Spades, 2 = trump Hearts,
+				  3 = trump Diamonds, 4 = trump Clubs */
+  int seats; /* One of the cases N, E, W, S, NS, EW;
+				   0 = N 1 = E, 2 = S, 3 = W, 4 = NS, 5 = EW */
 };
 
 struct parResultsMaster
 {
-  int score;
-  int number;
-  struct contractType contracts[10];
+  int score; /* Sign according to the NS view */
+  int number; /* Number of contracts giving the par score */
+  struct contractType contracts[10]; /* Par contracts */
 };
 
 struct parTextResults
 {
-  char parText[2][128];
-  bool equal;
+  char parText[2][128]; /* Short text for par information, e.g.
+				Par -110: EW 2S EW 2D+1 */
+  bool equal; /* true in the normal case when it does not matter who
+			starts the bidding. Otherwise, false. */
 };
+
 
 struct playTraceBin
 {
@@ -314,47 +337,169 @@ struct solvedPlays
 
 struct DDSInfo
 {
-  int major, minor, patch;
+  // Version 2.8.0 has 2, 8, 0 and a string of 2.8.0
+  int major, minor, patch; 
   char versionString[10];
+
+  // Currently 0 = unknown, 1 = Windows, 2 = Cygwin, 3 = Linux, 4 = Apple
   int system;
-  int numBits;
+
+  // Currently 0 = unknown, 1 = Microsoft Visual C++, 2 = mingw,
+  // 3 = GNU g++, 4 = clang
   int compiler;
+
+  // Currently 0 = none, 1 = DllMain, 2 = Unix-style
   int constructor;
-  int numCores;
+
+  // Currently 0 = none, 1 = Windows, 2 = OpenMP, 3 = GCD
   int threading;
+
+  // The actual number of threads configured
   int noOfThreads;
-  char threadSizes[128];
-  char systemString[1024];
+
+  char systemString[512];
 };
 
-EXTERN_C DLLEXPORT void STDCALL SetMaxThreads(int userThreads);
-EXTERN_C DLLEXPORT int STDCALL SetThreading(int code);
-EXTERN_C DLLEXPORT void STDCALL SetResources(int maxMemoryMB, int maxThreads);
+
+
+EXTERN_C DLLEXPORT void STDCALL SetMaxThreads(
+  int userThreads);
+
 EXTERN_C DLLEXPORT void STDCALL FreeMemory();
-EXTERN_C DLLEXPORT int STDCALL SolveBoard(struct deal dl, int target, int solutions, int mode, struct futureTricks * futp, int threadIndex);
-EXTERN_C DLLEXPORT int STDCALL SolveBoardPBN(struct dealPBN dlpbn, int target, int solutions, int mode, struct futureTricks * futp, int thrId);
-EXTERN_C DLLEXPORT int STDCALL CalcDDtable(struct ddTableDeal tableDeal, struct ddTableResults * tablep);
-EXTERN_C DLLEXPORT int STDCALL CalcDDtablePBN(struct ddTableDealPBN tableDealPBN, struct ddTableResults * tablep);
-EXTERN_C DLLEXPORT int STDCALL CalcAllTables(struct ddTableDeals * dealsp, int mode, int trumpFilter[DDS_STRAINS], struct ddTablesRes * resp, struct allParResults * presp);
-EXTERN_C DLLEXPORT int STDCALL CalcAllTablesPBN(struct ddTableDealsPBN * dealsp, int mode, int trumpFilter[DDS_STRAINS], struct ddTablesRes * resp, struct allParResults * presp);
-EXTERN_C DLLEXPORT int STDCALL SolveAllBoards(struct boardsPBN * bop, struct solvedBoards * solvedp);
-EXTERN_C DLLEXPORT int STDCALL SolveAllChunks(struct boardsPBN * bop, struct solvedBoards * solvedp, int chunkSize);
-EXTERN_C DLLEXPORT int STDCALL SolveAllChunksBin(struct boards * bop, struct solvedBoards * solvedp, int chunkSize);
-EXTERN_C DLLEXPORT int STDCALL SolveAllChunksPBN(struct boardsPBN * bop, struct solvedBoards * solvedp, int chunkSize);
-EXTERN_C DLLEXPORT int STDCALL Par(struct ddTableResults * tablep, struct parResults * presp, int vulnerable);
-EXTERN_C DLLEXPORT int STDCALL CalcPar(struct ddTableDeal tableDeal, int vulnerable, struct ddTableResults * tablep, struct parResults * presp);
-EXTERN_C DLLEXPORT int STDCALL CalcParPBN(struct ddTableDealPBN tableDealPBN, struct ddTableResults * tablep, int vulnerable, struct parResults * presp);
-EXTERN_C DLLEXPORT int STDCALL SidesPar(struct ddTableResults * tablep, struct parResultsDealer sidesRes[2], int vulnerable);
-EXTERN_C DLLEXPORT int STDCALL DealerPar(struct ddTableResults * tablep, struct parResultsDealer * presp, int dealer, int vulnerable);
-EXTERN_C DLLEXPORT int STDCALL DealerParBin(struct ddTableResults * tablep, struct parResultsMaster * presp, int dealer, int vulnerable);
-EXTERN_C DLLEXPORT int STDCALL SidesParBin(struct ddTableResults * tablep, struct parResultsMaster sidesRes[2], int vulnerable);
-EXTERN_C DLLEXPORT int STDCALL ConvertToDealerTextFormat(struct parResultsMaster * pres, char * resp);
-EXTERN_C DLLEXPORT int STDCALL ConvertToSidesTextFormat(struct parResultsMaster * pres, struct parTextResults * resp);
-EXTERN_C DLLEXPORT int STDCALL AnalysePlayBin(struct deal dl, struct playTraceBin play, struct solvedPlay * solved, int thrId);
-EXTERN_C DLLEXPORT int STDCALL AnalysePlayPBN(struct dealPBN dlPBN, struct playTracePBN playPBN, struct solvedPlay * solvedp, int thrId);
-EXTERN_C DLLEXPORT int STDCALL AnalyseAllPlaysBin(struct boards * bop, struct playTracesBin * plp, struct solvedPlays * solvedp, int chunkSize);
-EXTERN_C DLLEXPORT int STDCALL AnalyseAllPlaysPBN(struct boardsPBN * bopPBN, struct playTracesPBN * plpPBN, struct solvedPlays * solvedp, int chunkSize);
-EXTERN_C DLLEXPORT void STDCALL GetDDSInfo(struct DDSInfo * info);
-EXTERN_C DLLEXPORT void STDCALL ErrorMessage(int code, char line[80]);
+
+EXTERN_C DLLEXPORT int STDCALL SolveBoard(
+  struct deal dl,
+  int target,
+  int solutions,
+  int mode,
+  struct futureTricks * futp,
+  int threadIndex);
+
+EXTERN_C DLLEXPORT int STDCALL SolveBoardPBN(
+  struct dealPBN dlpbn,
+  int target,
+  int solutions,
+  int mode,
+  struct futureTricks * futp,
+  int thrId);
+
+EXTERN_C DLLEXPORT int STDCALL CalcDDtable(
+  struct ddTableDeal tableDeal,
+  struct ddTableResults * tablep);
+
+EXTERN_C DLLEXPORT int STDCALL CalcDDtablePBN(
+  struct ddTableDealPBN tableDealPBN,
+  struct ddTableResults * tablep);
+
+EXTERN_C DLLEXPORT int STDCALL CalcAllTables(
+  struct ddTableDeals * dealsp,
+  int mode,
+  int trumpFilter[DDS_STRAINS],
+  struct ddTablesRes * resp,
+  struct allParResults * presp);
+
+EXTERN_C DLLEXPORT int STDCALL CalcAllTablesPBN(
+  struct ddTableDealsPBN * dealsp,
+  int mode,
+  int trumpFilter[DDS_STRAINS],
+  struct ddTablesRes * resp,
+  struct allParResults * presp);
+
+EXTERN_C DLLEXPORT int STDCALL SolveAllBoards(
+  struct boardsPBN * bop,
+  struct solvedBoards * solvedp);
+
+EXTERN_C DLLEXPORT int STDCALL SolveAllChunks(
+  struct boardsPBN * bop,
+  struct solvedBoards * solvedp,
+  int chunkSize);
+
+EXTERN_C DLLEXPORT int STDCALL SolveAllChunksBin(
+  struct boards * bop,
+  struct solvedBoards * solvedp,
+  int chunkSize);
+
+EXTERN_C DLLEXPORT int STDCALL SolveAllChunksPBN(
+  struct boardsPBN * bop,
+  struct solvedBoards * solvedp,
+  int chunkSize);
+
+EXTERN_C DLLEXPORT int STDCALL Par(
+  struct ddTableResults * tablep,
+  struct parResults * presp,
+  int vulnerable);
+
+EXTERN_C DLLEXPORT int STDCALL CalcPar(
+  struct ddTableDeal tableDeal,
+  int vulnerable,
+  struct ddTableResults * tablep,
+  struct parResults * presp);
+
+EXTERN_C DLLEXPORT int STDCALL CalcParPBN(
+  struct ddTableDealPBN tableDealPBN,
+  struct ddTableResults * tablep,
+  int vulnerable,
+  struct parResults * presp);
+
+EXTERN_C DLLEXPORT int STDCALL SidesPar(
+  struct ddTableResults * tablep,
+  struct parResultsDealer sidesRes[2],
+  int vulnerable);
+
+EXTERN_C DLLEXPORT int STDCALL DealerPar(
+  struct ddTableResults * tablep,
+  struct parResultsDealer * presp,
+  int dealer,
+  int vulnerable);
+
+EXTERN_C DLLEXPORT int STDCALL DealerParBin(
+  struct ddTableResults * tablep,
+  struct parResultsMaster * presp,
+  int dealer, 
+  int vulnerable);
+
+EXTERN_C DLLEXPORT int STDCALL SidesParBin(
+  struct ddTableResults * tablep,
+  struct parResultsMaster sidesRes[2],
+  int vulnerable);
+
+EXTERN_C DLLEXPORT int STDCALL ConvertToDealerTextFormat(
+  struct parResultsMaster * pres,
+  char * resp);
+
+EXTERN_C DLLEXPORT int STDCALL ConvertToSidesTextFormat(
+  struct parResultsMaster * pres,
+  struct parTextResults * resp);
+
+EXTERN_C DLLEXPORT int STDCALL AnalysePlayBin(
+  struct deal dl,
+  struct playTraceBin play,
+  struct solvedPlay * solved,
+  int thrId);
+
+EXTERN_C DLLEXPORT int STDCALL AnalysePlayPBN(
+  struct dealPBN dlPBN,
+  struct playTracePBN playPBN,
+  struct solvedPlay * solvedp,
+  int thrId);
+
+EXTERN_C DLLEXPORT int STDCALL AnalyseAllPlaysBin(
+  struct boards * bop,
+  struct playTracesBin * plp,
+  struct solvedPlays * solvedp,
+  int chunkSize);
+
+EXTERN_C DLLEXPORT int STDCALL AnalyseAllPlaysPBN(
+  struct boardsPBN * bopPBN,
+  struct playTracesPBN * plpPBN,
+  struct solvedPlays * solvedp,
+  int chunkSize);
+
+EXTERN_C DLLEXPORT void STDCALL GetDDSInfo(
+  struct DDSInfo * info);
+
+EXTERN_C DLLEXPORT void STDCALL ErrorMessage(
+  int code,
+  char line[80]);
 
 #endif
