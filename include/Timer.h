@@ -1,43 +1,63 @@
 /*
    DDS, a bridge double dummy solver.
+
    Copyright (C) 2006-2014 by Bo Haglund /
    2014-2018 by Bo Haglund & Soren Hein.
+
+   See LICENSE and README.
 */
 
-#ifndef DDS_TIMER_H
-#define DDS_TIMER_H
+#ifndef DDS_TIMING_H
+#define DDS_TIMING_H
 
-#include <time.h>
-#include "dds.h"
+#include <string>
+#include <chrono>
 
-#define TIMER_MOVEGEN 0
-#define TIMER_MAKE 8
-#define TIMER_UNDO 16
-#define TIMER_NEXTMOVE 24
-#define TIMER_QT 32
-#define TIMER_AB 40
-#define TIMER_BUILD 48
-#define NOOF_TIMERS 56
+using Clock = std::chrono::steady_clock;
+using std::chrono::time_point;
+
+using namespace std;
+
 
 class Timer
 {
-private:
-  struct timeval startTime[NOOF_TIMERS];
-  struct timeval endTime[NOOF_TIMERS];
-  int count[NOOF_TIMERS];
-  double sum[NOOF_TIMERS];
-  char fname[DDS_FNAME_LEN];
+  private:
 
-public:
-  Timer();
-  ~Timer();
-  void Reset();
-  void Start(int no);
-  void End(int no);
-  void Print() const;
+    string name;
+    int count;
+    long userCum;
+    long systCum;
+
+    time_point<Clock> user0;
+    clock_t syst0;
+
+  public:
+
+    Timer();
+
+    ~Timer();
+
+    void Reset();
+
+    void SetName(const string& nameIn);
+
+    void Start();
+
+    void End();
+
+    bool Used() const;
+
+    int UserTime() const;
+
+    void operator += (const Timer& add);
+
+    void operator -= (const Timer& deduct);
+
+    string SumLine(
+      const Timer& divisor,
+      const string& bname = "") const;
+
+    string DetailLine() const;
 };
-
-#define TIMER_START(x) timer.Start(x)
-#define TIMER_END(x) timer.End(x)
 
 #endif
